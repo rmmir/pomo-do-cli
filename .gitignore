@@ -1,0 +1,35 @@
+/go.sum
+/go.mod
+
+# Build and binary files
+/bin/
+/build/
+*.exe
+*.out
+*.test
+*.prof
+
+# Dependency directories (for example, vendor directory)
+vendor/
+
+# IDE or editor directories and files (e.g., Visual Studio Code, JetBrains, etc.)
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+*.out
+*.coverprofile
+
+# Generated documentation files (optional, if using tools like godoc)
+doc/
+
+# Other tool-specific files or folders that may be generated (e.g., Cobra specific)
+cobra_gen/
+
+# SQLite Database
+*.db
+*.sqlite
