@@ -17,7 +17,6 @@ var taskCmd = &cobra.Command{
 	Long: `The 'edit task' command allows you to edit a task in your task management system.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id, err := cmd.Flags().GetInt("id")
-		fmt.Println(args)
 		if err != nil || id == 0 {
 			return fmt.Errorf("please provide a valid task ID: %v", err)
 		}
