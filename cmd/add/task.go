@@ -9,16 +9,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// taskCmd represents the task command
-var TaskCmd = &cobra.Command{
+var taskCmd = &cobra.Command{
 	Use:   "task [task description]",
 	Short: "Add a new task",
 	Long: `Add a new task to the list of tasks.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		db.ConnectDB()
 		if len(args) < 1 {
-			fmt.Println("Please provide a task description.")
-			return
+			return fmt.Errorf("please provide a task description")
+		}
+
+		if len(args) != 1 {
+			return fmt.Errorf("please provide a new task description enclosed in quotes")
 		}
 
 		task := m.Task{
@@ -30,11 +32,11 @@ var TaskCmd = &cobra.Command{
 
 		result := db.DB.Create(&task)
 		if result.Error != nil {
-			fmt.Printf("Error adding task: %v\n", result.Error)
-			return
+			return fmt.Errorf("unexpected issues when adding the task - %v", result.Error)
 		}
 
 		fmt.Printf("Task added with ID: %v - %s", task.ID, task.Description)
+		return nil
 	},
 }
 

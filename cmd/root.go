@@ -5,6 +5,7 @@ import (
 
 	"github.com/rmmir/pomo-do/cmd/add"
 	"github.com/rmmir/pomo-do/cmd/list"
+	"github.com/rmmir/pomo-do/cmd/edit"
 	"github.com/spf13/cobra"
 )
 
@@ -29,4 +30,5 @@ func init() {
 func addSubcommands() {
 	rootCmd.AddCommand(add.AddCmd)
 	rootCmd.AddCommand(list.ListCmd)
+	rootCmd.AddCommand(edit.EditCmd)
 }

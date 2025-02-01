@@ -17,12 +17,8 @@ func ConnectDB() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	log.Println("Database connection established")
-
 	err = DB.AutoMigrate(&m.Task{})
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
-
-	log.Println("Database connection and migration completed")
 }
