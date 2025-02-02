@@ -17,4 +17,5 @@ var RemoveCmd = &cobra.Command{
 
 func init() {
 	RemoveCmd.AddCommand(taskCmd)
+	RemoveCmd.AddCommand(categoryCmd)
 }

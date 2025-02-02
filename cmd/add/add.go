@@ -17,4 +17,5 @@ var AddCmd = &cobra.Command{
 
 func init() {
 	AddCmd.AddCommand(taskCmd)
+	AddCmd.AddCommand(categoryCmd)
 }

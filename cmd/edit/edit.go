@@ -17,4 +17,5 @@ var EditCmd = &cobra.Command{
 
 func init() {
 	EditCmd.AddCommand(taskCmd)
+	EditCmd.AddCommand(categoryCmd)
 }
