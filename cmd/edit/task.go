@@ -25,28 +25,18 @@ var taskCmd = &cobra.Command{
 			return fmt.Errorf("please provide a new task description enclosed in quotes")
 		}
 
-		newDescription := args[0]
-
 		db.ConnectDB()
-
-		var task m.Task
-		result := db.DB.Find(&task, id)
+		newDescription := args[0]
+		result := db.DB.Model(&m.Task{}).Where("id = ?", id).Updates(&m.Task{Description: newDescription, UpdatedAt: time.Now()})
 		if result.Error != nil {
-			return fmt.Errorf("issues fetching the task - %v", result.Error)
+			return fmt.Errorf("issues updating the task - %v", result.Error)
 		}
 
 		if result.RowsAffected == 0 {
 			return fmt.Errorf("no task found with ID %d", id)
 		}
 
-		task.Description = newDescription
-		task.UpdatedAt = time.Now()
-
-		saveResult := db.DB.Save(&task)
-		if saveResult.Error != nil {
-            return fmt.Errorf("issues updating the task - %v", saveResult.Error)
-        }
-		fmt.Printf("Task with ID: %d updated successfully to: %s\n", task.ID, task.Description)
+		fmt.Printf("Task with ID: %d updated successfully to: %s\n", taskID, newDescription)
 		return nil
 	},
 }

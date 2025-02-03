@@ -10,8 +10,8 @@ var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all items",
 	Long: `List all items in the task management system.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return fmt.Errorf("'list' command requires a subcommand (e.g., 'tasks' or 'categories')")
 	},
 }
 
