@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 
+	db "github.com/rmmir/pomo-do/database"
 	"github.com/rmmir/pomo-do/cmd/add"
 	"github.com/rmmir/pomo-do/cmd/list"
 	"github.com/rmmir/pomo-do/cmd/edit"
@@ -25,6 +26,7 @@ func Execute() {
 }
 
 func init() {
+	db.ConnectDB()	
 	addSubcommands()
 }
 

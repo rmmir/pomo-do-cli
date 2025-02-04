@@ -7,17 +7,18 @@ import (
 	db "github.com/rmmir/pomo-do/database"
 	m "github.com/rmmir/pomo-do/models"
 	"github.com/spf13/cobra"
+    "github.com/google/uuid"
 )
 
-var taskID int
+var taskID string
 
 var taskCmd = &cobra.Command{
 	Use:   "task",
 	Short: "Edit a task in your task management system",
 	Long: `The 'edit task' command allows you to edit a task in your task management system.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id, err := cmd.Flags().GetInt("id")
-		if err != nil || id == 0 {
+		id, err := uuid.Parse(taskID)
+		if err != nil || id == uuid.Nil {
 			return fmt.Errorf("please provide a valid task ID: %v", err)
 		}
 
@@ -36,11 +37,12 @@ var taskCmd = &cobra.Command{
 			return fmt.Errorf("no task found with ID %d", id)
 		}
 
-		fmt.Printf("Task with ID: %d updated successfully to: %s\n", taskID, newDescription)
+		fmt.Printf("Task with ID: %s updated successfully to: %s\n", id, newDescription)
 		return nil
 	},
 }
 
 func init() {
-	taskCmd.Flags().IntVar(&taskID, "id", 0, "ID of the task to edit")
+	taskCmd.Flags().StringVar(&taskID, "id", "", "ID of the task to edit")
+    taskCmd.MarkFlagRequired("id")
 }

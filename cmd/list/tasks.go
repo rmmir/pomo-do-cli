@@ -3,12 +3,13 @@ package list
 import (
 	"fmt"
 
+    "github.com/google/uuid"
 	m "github.com/rmmir/pomo-do/models"
 	db "github.com/rmmir/pomo-do/database"
 	"github.com/spf13/cobra"
 )
 
-var taskID int
+var taskID string
 
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
@@ -16,8 +17,8 @@ var tasksCmd = &cobra.Command{
 	Long: `List all tasks in the task management system.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		db.ConnectDB()
-
-		if taskID > 0 {
+		
+		if len(taskID) > 0 {
 			return listTaskByID(taskID)
 		} else {
 			return listAllTasks()
@@ -26,7 +27,7 @@ var tasksCmd = &cobra.Command{
 }
 
 func init() {
-	tasksCmd.Flags().IntVar(&taskID, "id", 0, "ID of the task to list")
+	tasksCmd.Flags().StringVar(&taskID, "id", "", "ID of the task to edit")
 }
 
 func listAllTasks() error {
@@ -34,6 +35,11 @@ func listAllTasks() error {
 	result := db.DB.Find(&tasks)
 	if result.Error != nil {
 		return fmt.Errorf("issues fetching tasks: %v", result.Error)
+	}
+
+	if len(tasks) == 0 {
+		fmt.Println("No tasks found")
+		return nil
 	}
 
 	fmt.Println("Tasks:")
@@ -44,7 +50,12 @@ func listAllTasks() error {
 	return nil
 }
 
-func listTaskByID(id int) error {
+func listTaskByID(taskID string) error {
+	id, err := uuid.Parse(taskID)
+	if err != nil || id == uuid.Nil {
+		return fmt.Errorf("please provide a valid task ID: %v", err)
+	}
+
 	var task m.Task
 	result := db.DB.Find(&task, id)
 	if result.Error != nil {
@@ -52,9 +63,9 @@ func listTaskByID(id int) error {
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("no task found with ID: %d", id)
+		return fmt.Errorf("no task found with ID: %s", id)
 	}
 
-    fmt.Printf("%d: %s\n", task.ID, task.Description)
+    fmt.Printf("%s: %s\n", task.ID, task.Description)
 	return nil
 }

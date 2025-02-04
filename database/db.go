@@ -21,4 +21,9 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
+
+	err = DB.AutoMigrate(&m.Category{})
+	if err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
 }
