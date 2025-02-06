@@ -51,6 +51,10 @@ func listAllTasks() error {
 }
 
 func listTaskByID(taskID string) error {
+	if len(taskID) != 8 {
+		return fmt.Errorf("please provide a valid task ID with 8 characters")
+	}
+
 	var task m.Task
 	result := db.DB.Find(&task, "id LIKE ?", "%"+taskID+"%")
 	if result.Error != nil {

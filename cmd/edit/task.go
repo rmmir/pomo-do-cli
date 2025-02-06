@@ -16,13 +16,16 @@ var taskCmd = &cobra.Command{
 	Short: "Edit a task in your task management system",
 	Long:  `The 'edit task' command allows you to edit a task in your task management system.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(taskID) != 8 {
+			return fmt.Errorf("please provide a valid task ID with 8 characters")
+		}
+
 		if len(args) != 1 {
 			return fmt.Errorf("please provide a new task description enclosed in quotes")
 		}
 
 		db.ConnectDB()
 		newDescription := args[0]
-
 		result := db.DB.Model(&m.Task{}).Where("id LIKE ?", "%"+taskID+"%").Updates(&m.Task{Description: newDescription, UpdatedAt: time.Now()})
 		if result.Error != nil {
 			return fmt.Errorf("issues updating the task - %v", result.Error)

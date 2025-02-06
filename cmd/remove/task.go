@@ -15,6 +15,10 @@ var taskCmd = &cobra.Command{
 	Short: "Removes tasks or categories in your task management system",
 	Long: `The 'remove task' command allows you to remove tasks or categories in your task management system.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(taskID) != 8 {
+			return fmt.Errorf("please provide a valid task ID with 8 characters")
+		}
+		
 		db.ConnectDB()
 		result := db.DB.Delete(&m.Task{}, "id LIKE ?", "%"+taskID+"%")
 		if result.Error != nil {
