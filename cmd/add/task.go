@@ -6,6 +6,7 @@ import (
 
 	m "github.com/rmmir/pomo-do/models"
 	db "github.com/rmmir/pomo-do/database"
+	u "github.com/rmmir/pomo-do/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +36,7 @@ var taskCmd = &cobra.Command{
 			return fmt.Errorf("unexpected issues when adding the task - %v", result.Error)
 		}
 
-		fmt.Printf("Task added with ID: %v - %s", task.ID, task.Description)
+		fmt.Printf("Task added with ID: %v - %s\n", u.GetShortUUID(task.ID), task.Description)
 		return nil
 	},
 }

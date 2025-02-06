@@ -3,9 +3,9 @@ package list
 import (
 	"fmt"
 
-    "github.com/google/uuid"
 	m "github.com/rmmir/pomo-do/models"
 	db "github.com/rmmir/pomo-do/database"
+	u "github.com/rmmir/pomo-do/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -44,28 +44,23 @@ func listAllTasks() error {
 
 	fmt.Println("Tasks:")
 	for _, task := range tasks {
-		fmt.Printf("%v: %s\n", task.ID, task.Description)
+		fmt.Printf("%v: %s\n", u.GetShortUUID(task.ID), task.Description)
 	}
 
 	return nil
 }
 
 func listTaskByID(taskID string) error {
-	id, err := uuid.Parse(taskID)
-	if err != nil || id == uuid.Nil {
-		return fmt.Errorf("please provide a valid task ID: %v", err)
-	}
-
 	var task m.Task
-	result := db.DB.Find(&task, id)
+	result := db.DB.Find(&task, "id LIKE ?", "%"+taskID+"%")
 	if result.Error != nil {
 		return fmt.Errorf("issues fetching task with ID: %v", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("no task found with ID: %s", id)
+		return fmt.Errorf("no task found with ID: %s", taskID)
 	}
 
-    fmt.Printf("%s: %s\n", task.ID, task.Description)
+    fmt.Printf("%s: %s\n", u.GetShortUUID(task.ID), task.Description)
 	return nil
 }
