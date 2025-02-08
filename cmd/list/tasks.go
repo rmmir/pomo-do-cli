@@ -50,21 +50,21 @@ func listAllTasks() error {
 	return nil
 }
 
-func listTaskByID(taskID string) error {
-	if len(taskID) != 8 {
+func listTaskByID(id string) error {
+	if len(id) != 8 {
 		return fmt.Errorf("please provide a valid task ID with 8 characters")
 	}
 
 	var task m.Task
-	result := db.DB.Find(&task, "id LIKE ?", "%"+taskID+"%")
+	result := db.DB.Find(&task, "id LIKE ?", "%"+id+"%")
 	if result.Error != nil {
 		return fmt.Errorf("issues fetching task with ID: %v", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("no task found with ID: %s", taskID)
+		return fmt.Errorf("no task found with ID: %s", id)
 	}
 
-    fmt.Printf("%s: %s\n", u.GetShortUUID(task.ID), task.Description)
+    fmt.Printf("%s: %s\n", id, task.Description)
 	return nil
 }

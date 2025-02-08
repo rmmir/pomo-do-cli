@@ -5,6 +5,7 @@ import (
 
 	db "github.com/rmmir/pomo-do/database"
 	m "github.com/rmmir/pomo-do/models"
+	u "github.com/rmmir/pomo-do/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -31,8 +32,7 @@ var categoryCmd = &cobra.Command{
 			return fmt.Errorf("unexpected issues when adding the category - %v", result.Error)
 		}
 
-		fmt.Printf("Category with ID: %d added successfully\n", category.ID)
-
+		fmt.Printf("Category with ID: %s added successfully\n", u.GetShortUUID(category.ID))
 		return nil
 	},
 }

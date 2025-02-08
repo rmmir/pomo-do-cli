@@ -1,10 +1,11 @@
 package models
 
 import (
-    "time"
+	"errors"
+	"time"
 
-    "github.com/google/uuid"
-    "gorm.io/gorm"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Task struct {
@@ -22,8 +23,16 @@ func (t *Task) BeforeCreate(tx *gorm.DB) (err error) {
         t.ID = uuid.New()
     }
 
-    return
+    return t.Validate()
 }
+
+func (t *Task) Validate() error {
+    if len(t.Description) < 3 {
+        return errors.New("task description must be at least 3 characters long")
+    }
+
+    return nil
+ }
 
 type Category struct {
     ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
@@ -37,5 +46,13 @@ func (c *Category) BeforeCreate(tx *gorm.DB) (err error) {
         c.ID = uuid.New()
     }
 
-    return
+    return c.Validate()
 }
+
+func (c *Category) Validate() error {
+    if len(c.Name) < 3 {
+        return errors.New("category name must be at least 3 characters long")
+    }
+
+    return nil
+ }

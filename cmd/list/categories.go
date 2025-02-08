@@ -5,10 +5,11 @@ import (
 
 	m "github.com/rmmir/pomo-do/models"
 	db "github.com/rmmir/pomo-do/database"
+	u "github.com/rmmir/pomo-do/utils"
 	"github.com/spf13/cobra"
 )
 
-var categoryID int
+var categoryID string
 
 var categoriesCmd = &cobra.Command{
 	Use:   "categories",
@@ -17,7 +18,7 @@ var categoriesCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		db.ConnectDB()
 
-		if categoryID > 0 {
+		if len(categoryID) > 0 {
 			return listCategoryByID(categoryID)
 		} else {
 			return listAllCategories()
@@ -26,7 +27,7 @@ var categoriesCmd = &cobra.Command{
 }
 
 func init() {
-	categoriesCmd.Flags().IntVar(&categoryID, "id", 0, "ID of the category to list")
+	categoriesCmd.Flags().StringVar(&categoryID, "id", "", "ID of the category to list")
 }
 
 func listAllCategories() error {
@@ -38,23 +39,27 @@ func listAllCategories() error {
 
 	fmt.Println("Categories:")
 	for _, category := range categories {
-		fmt.Printf("%v: %s\n", category.ID, category.Name)
+		fmt.Printf("%s: %s\n", u.GetShortUUID(category.ID), category.Name)
 	}
 
 	return nil
 }
 
-func listCategoryByID(id int) error {
+func listCategoryByID(id string) error {
+	if len(id) != 8 {
+		return fmt.Errorf("please provide a valid task ID with 8 characters")
+	}
+
 	var category m.Category
-	result := db.DB.Find(&category, id)
+	result := db.DB.Find(&category, "id LIKE ?", "%"+id+"%")
 	if result.Error != nil {
 		return fmt.Errorf("issues fetching category with ID: %v", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("no category found with ID: %d", id)
+		return fmt.Errorf("no category found with ID: %s", id)
 	}
 
-    fmt.Printf("%d: %s\n", category.ID, category.Name)
+    fmt.Printf("%s: %s\n", id, category.Name)
 	return nil
 }
