@@ -32,7 +32,7 @@ func init() {
 
 func listAllTasks() error {
 	var tasks []m.Task
-	result := db.DB.Find(&tasks)
+	result := db.DB.Preload("Category").Find(&tasks)
 	if result.Error != nil {
 		return fmt.Errorf("issues fetching tasks: %v", result.Error)
 	}
@@ -56,7 +56,7 @@ func listTaskByID(id string) error {
 	}
 
 	var task m.Task
-	result := db.DB.Find(&task, "id LIKE ?", "%"+id+"%")
+	result := db.DB.Preload("Category").Find(&task, "id LIKE ?", "%"+id+"%")
 	if result.Error != nil {
 		return fmt.Errorf("issues fetching task with ID: %v", result.Error)
 	}

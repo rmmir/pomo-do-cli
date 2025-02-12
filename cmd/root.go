@@ -8,6 +8,7 @@ import (
 	"github.com/rmmir/pomo-do/cmd/list"
 	"github.com/rmmir/pomo-do/cmd/edit"
 	"github.com/rmmir/pomo-do/cmd/remove"
+	"github.com/rmmir/pomo-do/cmd/view"
 	"github.com/spf13/cobra"
 )
 
@@ -35,4 +36,5 @@ func addSubcommands() {
 	rootCmd.AddCommand(list.ListCmd)
 	rootCmd.AddCommand(edit.EditCmd)
 	rootCmd.AddCommand(remove.RemoveCmd)
+	rootCmd.AddCommand(view.ViewCmd)
 }
