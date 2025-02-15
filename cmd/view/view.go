@@ -4,11 +4,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/manifoldco/promptui"
-	"github.com/spf13/cobra"
 	db "github.com/rmmir/pomo-do/database"
 	m "github.com/rmmir/pomo-do/models"
+	"github.com/manifoldco/promptui"
+	"github.com/spf13/cobra"
 )
+
+type TaskDisplay struct {
+	ID          uint
+	Description string
+	Completed   bool
+	Category    string
+}
 
 var ViewCmd = &cobra.Command{
 	Use:   "view",
@@ -17,27 +24,39 @@ var ViewCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var tasks []m.Task
 		db.ConnectDB()
-		tasksResult := db.DB.Find(&tasks)
+		tasksResult := db.DB.Preload("Category").Find(&tasks)
 		if tasksResult.Error != nil {
 			return fmt.Errorf("issues fetching tasks: %v", tasksResult.Error)
 		}
 
-		var taskDescriptions []string
+		var tasksToDisplay []TaskDisplay
 		for i, task := range tasks {
-			taskDescriptions = append(taskDescriptions, fmt.Sprintf("%d. %s", i+1, task.Description))
+			tasksToDisplay = append(tasksToDisplay, TaskDisplay{
+				ID:          uint(i),
+				Description: task.Description,
+				Completed:   task.Completed,
+				Category:    task.Category.Name,
+			})
 		}
 
 		prompt := promptui.Select{
 			Label: "List of tasks (Select a task to edit or delete)",
-			Items: taskDescriptions,
+			Items: tasksToDisplay,
+			Templates: &promptui.SelectTemplates{
+				Label:    "{{ . }}",
+				Active:   "{{ if .Category }}\U0001F345 {{ .ID }}. {{ .Description | cyan }} ({{ .Category | cyan }}){{ else }}\U0001F345 {{ .ID }}. {{ .Description | cyan }} (No Category){{ end }}",
+				Inactive: "{{ if .Category }}  {{ .ID }}. {{ .Description }} ({{ .Category }}){{ else }}  {{ .ID }}. {{ .Description }} (No Category){{ end }}",
+				Selected: "{{ if .Category }}\U0001F345 {{ .ID }}. {{ .Description | red }} ({{ .Category | red }}){{ else }}\U0001F345 {{ .ID }}. {{ .Description | red }} (No Category){{ end }}",
+			},
 		}
 
-		_, result, err := prompt.Run()
+		i, _, err := prompt.Run()
 		if err != nil {
 			log.Fatalf("Prompt failed: %v\n", err)
 		}
 
-		fmt.Printf("You selected: %s\n", result)
+		selectedTask := tasksToDisplay[i]
+		fmt.Printf("You selected: %s\n", selectedTask.Description)
 
 		actionPrompt := promptui.Select{
 			Label: "What do you want to do?",
@@ -51,11 +70,9 @@ var ViewCmd = &cobra.Command{
 
 		switch action {
 		case "Edit":
-			fmt.Println("Editing task:", result)
-			// TODO: Implement edit logic
+			editTask(selectedTask)
 		case "Delete":
-			fmt.Println("Deleting task:", result)
-			// TODO: Implement delete logic
+			deleteTask(selectedTask)
 		default:
 			fmt.Println("Cancelled")
 		}
@@ -65,4 +82,26 @@ var ViewCmd = &cobra.Command{
 }
 
 func init() {
+}
+
+func editTask(task TaskDisplay) error {
+	fmt.Println("Editing task:", task)
+
+	prompt := promptui.Prompt{
+        Label:   "Add new Description",
+    }
+
+    newDescription, err := prompt.Run()
+    if err != nil {
+        return fmt.Errorf("prompt failed: %v", err)
+    }
+
+	fmt.Println("New Description:", newDescription)
+	return nil
+}
+
+func deleteTask(task TaskDisplay) error {
+	fmt.Println("Deleting task:", task)
+
+	return nil
 }
