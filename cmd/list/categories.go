@@ -37,6 +37,11 @@ func listAllCategories() error {
 		return fmt.Errorf("issues fetching categories: %v", result.Error)
 	}
 
+	if len(categories) == 0 {
+		fmt.Println("No categories found")
+		return nil
+	}
+
 	fmt.Println("Categories:")
 	for _, category := range categories {
 		fmt.Printf("%s: %s\n", u.GetShortUUID(category.ID), category.Name)
