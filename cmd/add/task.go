@@ -29,23 +29,26 @@ var taskCmd = &cobra.Command{
 		if categoryID != "" && len(categoryID) != 8 {
 			return fmt.Errorf("please provide a valid category ID with 8 characters")
 		}
-
-		var category m.Category
-		categoryResult := db.DB.Find(&category, "id LIKE ?", "%"+categoryID+"%")
-		if categoryResult.Error != nil {
-			return fmt.Errorf("issues fetching category with ID: %s - %v", categoryID, categoryResult.Error)
-		}
-	
-		if categoryResult.RowsAffected == 0 {
-			return fmt.Errorf("no category found with ID: %s", categoryID)
-		}
-
+		
 		task := m.Task{
 			Description: args[0],
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			Completed: false,
-			CategoryID: category.ID,
+		}
+
+		if categoryID != "" {
+			var category m.Category
+			categoryResult := db.DB.Find(&category, "id LIKE ?", "%"+categoryID+"%")
+			if categoryResult.Error != nil {
+				return fmt.Errorf("issues fetching category with ID: %s - %v", categoryID, categoryResult.Error)
+			}
+		
+			if categoryResult.RowsAffected == 0 {
+				return fmt.Errorf("no category found with ID: %s", categoryID)
+			}
+
+			task.CategoryID = category.ID
 		}
 
 		result := db.DB.Create(&task)
