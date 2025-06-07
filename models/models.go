@@ -58,3 +58,39 @@ func (c *Category) Validate() error {
 
 	return nil
 }
+
+type Session struct {
+	ID          uuid.UUID     `gorm:"type:uuid;primaryKey"`
+	Name        string        `gorm:"size:255;column:name"`
+	WorkTime    time.Duration `gorm:"column:work_time;default:0"`
+	BreakTime   time.Duration `gorm:"column:break_time;default:0"`
+	Repetitions int           `gorm:"column:repetitions;default:1"`
+}
+
+func (s *Session) BeforeCreate(tx *gorm.DB) (err error) {
+	if s.ID == uuid.Nil {
+		s.ID = uuid.New()
+	}
+
+	return s.Validate()
+}
+
+func (s *Session) Validate() error {
+	if len(s.Name) < 3 {
+		return errors.New("session name must be at least 3 characters long")
+	}
+
+	if s.WorkTime < 15*time.Minute {
+		return errors.New("work time must be at least 15 minutes")
+	}
+
+	if s.BreakTime < 5*time.Minute {
+		return errors.New("break time must be at least 5 minutes")
+	}
+
+	if s.Repetitions < 1 {
+		return errors.New("repetitions must be at least 1")
+	}
+
+	return nil
+}

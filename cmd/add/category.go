@@ -16,7 +16,7 @@ var categoryCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		db.ConnectDB()
 		if len(args) < 1 {
-			return fmt.Errorf("please provide a new category description enclosed in quotes")
+			return fmt.Errorf("please provide a new category description")
 		}
 
 		if len(args) != 1 {
